@@ -125,5 +125,5 @@ if __name__ == '__main__':
     try:
         port = int(sys.argv[1])
     except Exception as e:
-        port = 80
+        port = 8080
     app.run(host='0.0.0.0', port=port, debug=False)
