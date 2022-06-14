@@ -1,32 +1,41 @@
 import requests
-host = "http://localhost:9999"
-r = requests.get(f"{host}/train")
+host = "http://localhost:8080"
+
+
+
+payload = {
+    "database":"default",
+    "table":"hb_kako_vehicle_recognition",
+    "time_field":"shotTime",
+    "start_time":"2022-03-01 00:00:00",
+    "end_time":"2022-04-01 00:00:00",
+    "job_name":"hb_kako_vehicle_recognition_predict",
+    "conn_host":"192.168.3.243",
+    "conn_database":"default",
+    "conn_user":"default",
+    "conn_password":"123456"
+}
+
+
+r = requests.post(f"{host}/train", json=payload)
 print(r.text)
 
-payload = [{"Age": 85, "Sex": "male", "Embarked": "S"},
-           {"Age": 24, "Sex": "female", "Embarked": "C"},
-           {"Age": 3, "Sex": "male", "Embarked": "C"},
-           {"Age": 21, "Sex": "male", "Embarked": "S"}]
 
-r = requests.post(f"{host}/predict", json=payload)
+
+payload = {
+    "database":"default",
+    "table":"hb_kako_vehicle_recognition",
+    "time_field":"shotTime",
+    "start_time":"2022-03-01 00:00:00",
+    "end_time":"2022-04-01 00:00:00",
+    "job_name":"hb_kako_vehicle_recognition_predict",
+    "conn_host":"192.168.3.243",
+    "conn_database":"default",
+    "conn_user":"default",
+    "conn_password":"123456",
+    "model_path":"model/hb_kako_vehicle_recognition_predict_ts_model.pkl"
+}
+
+
+r = requests.post(f"{host}/back_testing", json=payload)
 print(r.text)
-
-r = requests.get(f"{host}/wipe")
-print(r.text)
-
-'''
-from urllib.parse import urlparse
-import http.client as ht
-
-def getStatus(ourl):
-    try:
-        url = urlparse(ourl)
-        conn = ht.HTTPConnection(url.netloc)
-        conn.request("HEAD", url.path)
-        res = conn.getresponse()
-        return res.status, ourl
-    except:
-        return "error", ourl
-
-getStatus(ourl="http://127.0.0.1:5000/train")
-'''

@@ -56,11 +56,12 @@ def train():
     print(sql)
     data = pd.DataFrame(list, columns=['date', 'count'])
     data = data.set_index('date')
+    data.asfreq('MS')
     data = data.sort_index()
     data.head()
     forecaster = ForecasterAutoreg(
         regressor=RandomForestRegressor(random_state=123),
-        lags=6
+        lags=3
     )
     forecaster.fit(y=data['count'])
     model_path = f'model/' + job_name + '_ts_model.pkl'
@@ -87,20 +88,22 @@ def back_testing():
     client = Client(conn_host, '9000', conn_database, conn_user, conn_password)
     client.execute("set max_bytes_before_external_group_by=100000000000")
     client.execute("set max_memory_usage=200000000000")
-    sql = "select toDate(" + time_field + ") as date,count() as count from " + database + "." + table + " where " + time_field + " >=  '" + start_time + "' and " + time_field + " <= '" + end_time + "'  group by toDate(" + time_field + ")"
+    sql = "select toDate(" + time_field + ") as date,count() as count from " + database + "." + table + " where " + time_field + " >=  '" + start_time + "' and " + time_field + " <= '" + end_time + "'  group by toDate(" + time_field + ") "
     list = client.execute(sql)
     print(sql)
     data = pd.DataFrame(list, columns=['date', 'count'])
     data = data.set_index('date')
+    data.asfreq('MS')
     data = data.sort_index()
     data.head()
 
     forecaster = joblib.load(model_path)
     steps = 1
+    initial_train_size = 6
     metric, predictions_backtest = backtesting_forecaster(
         forecaster=forecaster,
         y=data['count'],
-        initial_train_size=6,
+        initial_train_size=initial_train_size,
         fixed_train_size=False,
         steps=steps,
         metric='mean_squared_error',
