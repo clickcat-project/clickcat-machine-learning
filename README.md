@@ -1,5 +1,6 @@
 
 1. ### Install PIP requirements
+    Python3.6+ is necessary.
     ```
     pip install -r requirements.txt
     ```
