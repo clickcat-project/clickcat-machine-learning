@@ -1,6 +1,7 @@
 import json
 import sys
 from flask import Flask, request
+from flask_cors import CORS
 import joblib
 import pandas as pd
 from clickhouse_driver import Client
@@ -11,6 +12,7 @@ from skforecast.ForecasterAutoreg import ForecasterAutoreg
 from skforecast.model_selection import backtesting_forecaster
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/list', methods=['POST'])
