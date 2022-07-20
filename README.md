@@ -28,11 +28,23 @@
          "time_field":"shotTime",
          "start_time":"2022-03-01 00:00:00",
          "end_time":"2022-04-01 00:00:00",
+         "time_interval":"1 day",
          "job_name":"hb_kako_vehicle_recognition_predict",
          "conn_host":"192.168.3.243",
          "conn_database":"default",
          "conn_user":"default",
          "conn_password":"123456"
+    }
+    ```
+    ### /delete (POST)
+    ```
+    {
+        "job_id":"010defe2-a0d8-4acb-aa13-10d6e2cfbb87",
+        "conn_host":"192.168.3.243",
+        "conn_database":"default",
+        "conn_user":"default",
+        "conn_password":"123456",
+        "model_path":"model/hb_kako_vehicle_recognition_predict_ts_model.pkl"
     }
     ```
     ### /back_testing (POST)
@@ -43,6 +55,7 @@
         "time_field":"shotTime",
         "start_time":"2022-03-01 00:00:00",
         "end_time":"2022-04-01 00:00:00",
+        "time_interval":"1 day",
         "job_name":"hb_kako_vehicle_recognition_predict",
         "conn_host":"192.168.3.243",
         "conn_database":"default",
