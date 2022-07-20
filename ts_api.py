@@ -32,6 +32,18 @@ def list():
     list = client.execute('select * from clickcat.ML_TASK')
     return json.dumps(list)
 
+@app.route('/delete', methods=['POST'])
+def delete():
+    json_param = request.json
+    conn_host = json_param['conn_host']
+    conn_database = json_param['conn_database']
+    conn_user = json_param['conn_user']
+    conn_password = json_param['conn_password']
+    job_id = json_param['job_id']
+    client = Client(conn_host, '9000', conn_database, conn_user, conn_password)
+    resp = client.execute("alter table clickcat.ML_TASK delete where ID = '"+job_id+"'")
+    return json.dumps(resp)
+
 @app.route('/train', methods=['POST'])
 def train():
     json_param = request.json
@@ -40,6 +52,7 @@ def train():
     time_field = json_param['time_field']
     start_time = json_param['start_time']
     end_time = json_param['end_time']
+    time_interval = json_param['time_interval']
     job_name = json_param['job_name']
     conn_host = json_param['conn_host']
     conn_database = json_param['conn_database']
@@ -53,7 +66,8 @@ def train():
                         ) ENGINE  = MergeTree ORDER BY ID;
                    ''')
 
-    sql = "select toDate(" + time_field + ") as date,count() as count from " + database + "." + table + " where " + time_field + " >=  '" + start_time + "' and " + time_field + " <= '" + end_time + "'  group by toDate(" + time_field + ")"
+
+    sql = "select toStartOfInterval(" + time_field + ",INTERVAL "+time_interval+") as date,count() as count from " + database + "." + table + " where " + time_field + " >=  '" + start_time + "' and " + time_field + " <= '" + end_time + "'  group by toStartOfInterval(" + time_field + ",INTERVAL "+time_interval+")"
     list = client.execute(sql)
     print(sql)
     data = pd.DataFrame(list, columns=['date', 'count'])
@@ -82,6 +96,7 @@ def back_testing():
     time_field = json_param['time_field']
     start_time = json_param['start_time']
     end_time = json_param['end_time']
+    time_interval = json_param['time_interval']
     conn_host = json_param['conn_host']
     conn_database = json_param['conn_database']
     conn_user = json_param['conn_user']
@@ -90,7 +105,7 @@ def back_testing():
     client = Client(conn_host, '9000', conn_database, conn_user, conn_password)
     client.execute("set max_bytes_before_external_group_by=100000000000")
     client.execute("set max_memory_usage=200000000000")
-    sql = "select toDate(" + time_field + ") as date,count() as count from " + database + "." + table + " where " + time_field + " >=  '" + start_time + "' and " + time_field + " <= '" + end_time + "'  group by toDate(" + time_field + ") "
+    sql = "select toStartOfInterval(" + time_field + ",INTERVAL "+time_interval+") as date,count() as count from " + database + "." + table + " where " + time_field + " >=  '" + start_time + "' and " + time_field + " <= '" + end_time + "'  group by toStartOfInterval(" + time_field + ",INTERVAL "+time_interval+") "
     list = client.execute(sql)
     print(sql)
     data = pd.DataFrame(list, columns=['date', 'count'])
