@@ -1,3 +1,4 @@
+This is backend for ClickCat Machine Learning. 
 
 1. ### Install PIP requirements
     Python3.6+ is necessary.
